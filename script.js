@@ -1,8 +1,6 @@
 // la API de login no devuelve idPais. el idPais se guarda solo al registrar usuario
 // Usuarios antiguos pueden no tener miPais en localStorage
 
-let mapa = null;
-
 class Usuario {
   constructor(usuario, password, idPais) {
     this.usuario = usuario;
@@ -82,24 +80,6 @@ function navegar(evt) {
   }
 }
 
-// ================= PAÍSES =================
-
-function cargarPaises() {
-  fetch("https://movielist.develotion.com/paises")
-    .then((r) => r.json())
-    .then((data) => {
-      let opciones = "";
-
-      for (let p of data.paises) {
-        opciones += `<ion-select-option value="${p.id}">
-                     ${p.nombre}
-                   </ion-select-option>`;
-      }
-
-      document.querySelector("#slcPaises").innerHTML = opciones;
-    });
-}
-
 // ================= REGISTRO =================
 
 function registrar() {
@@ -133,17 +113,11 @@ function registrar() {
     .catch(() => alert("Error de conexión"));
 }
 
-// NAVEGAR ENTRE REGISTRO Y LOGIN
-
 function irRegistro() {
   window.location = "#/registro";
 }
 
-function irLogin() {
-  window.location = "#/";
-}
-
-// ================= LOGIN =================
+// ================= LOGIN ==================
 
 function login() {
   let usuario = document.querySelector("#txtUsuario").value;
@@ -187,6 +161,28 @@ function login() {
       }
     })
     .catch(() => alert("Error de conexión"));
+}
+
+function irLogin() {
+  window.location = "#/";
+}
+
+// ================= PAÍSES =================
+
+function cargarPaises() {
+  fetch("https://movielist.develotion.com/paises")
+    .then((r) => r.json())
+    .then((data) => {
+      let opciones = "";
+
+      for (let p of data.paises) {
+        opciones += `<ion-select-option value="${p.id}">
+                     ${p.nombre}
+                   </ion-select-option>`;
+      }
+
+      document.querySelector("#slcPaises").innerHTML = opciones;
+    });
 }
 
 // ================= LISTAR PELÍCULAS =================
@@ -419,7 +415,6 @@ function filtrarPeliculas() {
   let hoy = new Date();
 
   let filtradas = peliculasGlobal.filter((p) => {
-    // ✅ CAMBIO CLAVE
     let fechaPeli = new Date(p.fechaEstreno);
 
     let diferencia = hoy - fechaPeli;
@@ -446,212 +441,10 @@ function irEstadisticas() {
   window.location = "#/estadisticas";
 }
 
-//=============ESTADISTICAS=================
-
-function calcularEstadisticas() {
-  let total = peliculasGlobal.length;
-
-  let conteoPorCat = {};
-
-  for (let cat of categoriasGlobal) {
-    conteoPorCat[cat.id] = 0;
-  }
-
-  for (let peli of peliculasGlobal) {
-    if (conteoPorCat[peli.idCategoria] !== undefined) {
-      conteoPorCat[peli.idCategoria]++;
-    }
-  }
-
-  let aptas12 = 0;
-  let resto = 0;
-
-  for (let peli of peliculasGlobal) {
-    let cat = categoriasGlobal.find((c) => c.id == peli.idCategoria);
-
-    if (!cat) continue;
-
-    if (cat.edad_requerida > 12) {
-      aptas12++;
-    } else {
-      resto++;
-    }
-  }
-
-  let porcentaje12 = total > 0 ? ((aptas12 * 100) / total).toFixed(1) : 0;
-  let porcentajeResto = total > 0 ? ((resto * 100) / total).toFixed(1) : 0;
-
-  let html = `<h3>Total películas: ${total}</h3>`;
-
-  html += `<h4>Por categoría</h4>`;
-
-  for (let cat of categoriasGlobal) {
-    html += `
-      <ion-item>
-        <ion-label>
-          ${cat.emoji} ${cat.nombre}: ${conteoPorCat[cat.id]}
-        </ion-label>
-      </ion-item>
-    `;
-  }
-
-  html += `
-    <h4>Porcentaje edades</h4>
-    <p>+12: ${aptas12} (${porcentaje12}%)</p>
-    <p>Resto: ${resto} (${porcentajeResto}%)</p>
-  `;
-
-  document.querySelector("#listaPorCategoria").innerHTML = html;
-}
-
-function prepararEstadisticas() {
-  let token = localStorage.getItem("token");
-
-  fetch("https://movielist.develotion.com/peliculas.php", {
-    headers: {
-      Authorization: "Bearer " + token,
-    },
-  })
-    .then((r) => r.json())
-    .then((data) => {
-      peliculasGlobal = data.peliculas || [];
-
-      return fetch("https://movielist.develotion.com/categorias.php", {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      });
-    })
-    .then((r) => r.json())
-    .then((data) => {
-      categoriasGlobal = data.categorias || [];
-
-      calcularEstadisticas();
-    })
-    .catch(() => alert("Error al cargar estadísticas"));
-}
-
-// ================= MAPA =================
-
-function obtenerMiPais() {
-  let pais = localStorage.getItem("miPais");
-
-  if (!pais) {
-    let usuario = JSON.parse(localStorage.getItem("usuario") || "null");
-    if (usuario && usuario.idPais) {
-      pais = usuario.idPais;
-      localStorage.setItem("miPais", pais);
-    }
-  }
-
-  return pais;
-}
-
-// function cargarMapa() {
-//   let token = localStorage.getItem("token");
-
-//   Promise.all([
-//     fetch("https://movielist.develotion.com/paises.php").then((r) => r.json()),
-
-//     fetch("https://movielist.develotion.com/usuariosPorPais", {
-//       headers: {
-//         Authorization: "Bearer " + token,
-//       },
-//     }).then((r) => r.json()),
-//   ])
-//     .then(([paisesData, usuariosData]) => {
-//       let conteo = {};
-
-//       // Base desde países
-//       for (let p of paisesData.paises) {
-//         conteo[p.id] = 0;
-//       }
-
-//       // Datos reales del endpoint
-//       for (let u of usuariosData.paises) {
-//         conteo[u.id] = u.cantidadDeUsuarios;
-//       }
-
-//       dibujarMapa(paisesData.paises, conteo);
-//     })
-//     .catch((e) => {
-//       console.log("ERROR REAL MAPA:", e);
-//       alert("Error al cargar mapa");
-//     });
-// }
-
-function cargarMapa() {
-  let token = localStorage.getItem("token");
-
-  if (!token) {
-    alert("Debe iniciar sesión");
-    window.location = "#/";
-    return;
-  }
-
-  fetch("https://movielist.develotion.com/paises.php")
-    .then(function (respuesta) {
-      return respuesta.json();
-    })
-    .then(function (paisesData) {
-      fetch("https://movielist.develotion.com/usuariosPorPais", {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
-        .then(function (respuesta2) {
-          return respuesta2.json();
-        })
-        .then(function (usuariosData) {
-          let conteo = {};
-
-          for (let i = 0; i < paisesData.paises.length; i++) {
-            let pais = paisesData.paises[i];
-            conteo[pais.id] = 0;
-          }
-
-          for (let j = 0; j < usuariosData.paises.length; j++) {
-            let u = usuariosData.paises[j];
-            conteo[u.id] = u.cantidadDeUsuarios;
-          }
-
-          dibujarMapa(paisesData.paises, conteo);
-        })
-        .catch(function () {
-          alert("Error al obtener usuarios por país");
-        });
-    })
-    .catch(function () {
-      alert("Error al obtener países");
-    });
-}
-
-function dibujarMapa(paises, conteo) {
-  if (mapa !== null) {
-    mapa.remove();
-    mapa = null;
-  }
-
-  mapa = L.map("mapa").setView([-30, -60], 4);
-
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(mapa);
-
-  for (let p of paises) {
-    L.marker([p.latitud, p.longitud]).addTo(mapa).bindPopup(`
-        <b>${p.nombre}</b><br>
-        Usuarios: ${conteo[p.id]}
-      `);
-  }
-}
-
-function irMapa() {
-  window.location = "#/mapa";
-}
-
-// ================= LOGOUT =================
-
 function logout() {
   localStorage.removeItem("token");
   localStorage.removeItem("usuario");
+  document.querySelector("#txtUsuario").value = "";
+  document.querySelector("#txtPassword").value = "";
   window.location = "#/";
 }
