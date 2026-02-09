@@ -258,7 +258,6 @@ function eliminarPelicula(id) {
     },
   })
     .then((r) => {
-      // si no hay body, no intentes parsear JSON
       if (r.status === 204) return { codigo: 200 };
       return r
         .text()

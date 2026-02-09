@@ -1,0 +1,20 @@
+#txtUsuario, #txtPassword, #regUsuario, #regPass, #slcPaises {
+  color: rgb(73, 72, 73);
+  font-size: 18px;
+  font-family: 'Arial', Gadget, sans-serif;
+}
+
+#btnRegistrar, #btnLogin {
+    font-family: 'Arial', Gadget, sans-serif;
+    font-size: 18px;
+    display: flex;
+    width: 50%;
+    margin: 15px 25%;
+}
+
+#btnIrLogin, #btnIrRegistro {
+    font-size: 14px;
+    margin: 8px 10%;
+
+}
+
