@@ -51,7 +51,7 @@
             <ion-input
               id="txtPassword"
               type="password"
-              label="Password"
+              label="Contraseña"
             ></ion-input>
           </ion-item>
 
@@ -73,7 +73,7 @@
             <ion-input
               id="regPass"
               type="password"
-              label="Password"
+              label="Contraseña"
             ></ion-input>
           </ion-item>
 
@@ -113,12 +113,16 @@
         <ion-button id="btnFiltrar"> Aplicar filtro </ion-button>
 
         <ion-content class="ion-padding">
-          <ion-button onclick="prepararPantallaPeliculas()">
+          <ion-button id="btnActualizar" onclick="prepararPantallaPeliculas()">
             Actualizar
           </ion-button>
-          <ion-button onclick="irAlta()">Nueva Película</ion-button>
-          <ion-button onclick="irEstadisticas()">Estadísticas</ion-button>
-          <ion-button onclick="irMapa()">Mapa usuarios</ion-button>
+          <ion-button id="btnNuevaPelicula" onclick="irAlta()"
+            >Nueva Película</ion-button
+          >
+          <ion-button id="btnEstadisticas" onclick="irEstadisticas()"
+            >Estadísticas</ion-button
+          >
+          <ion-button id="btnMapa" onclick="irMapa()">Mapa usuarios</ion-button>
 
           <ion-list id="listaPeliculas"></ion-list>
         </ion-content>

@@ -1,20 +1,285 @@
-#txtUsuario, #txtPassword, #regUsuario, #regPass, #slcPaises {
-  color: rgb(73, 72, 73);
-  font-size: 18px;
-  font-family: 'Arial', Gadget, sans-serif;
+body {         
+  --background: #d4d4d6;
+  font-family: -apple-system,
+               BlinkMacSystemFont,
+               "San Francisco",
+               "Segoe UI",
+               Roboto,
+               sans-serif;
 }
 
-#btnRegistrar, #btnLogin {
+#pantalla-login ion-content,
+#pantalla-registro ion-content {
+  --background: #d4d4d6;
+  --padding-top: 20px;
+}
+
+ion-item {
+  --border-radius: 12px;
+  margin: 8px 12px;
+  --inner-border-width: 0;
+  --border-width: 0;
+  --highlight-height: 0;
+
+}
+
+#txtUsuario, #txtPassword,
+#regUsuario, #regPass, #slcPaises {
+    color: rgb(73, 72, 73);
+    font-size: 18px; 
+    --border-radius: 12px;
     font-family: 'Arial', Gadget, sans-serif;
-    font-size: 18px;
-    display: flex;
-    width: 50%;
-    margin: 15px 25%;
+    
+}
+
+#btnLogin, #btnRegistrar {
+  width: 70%;
+  margin: 16px auto;
+  display: block;
+
+  --border-radius: 12px;
+  --background: #007aff;
+  --background-activated: #0063cc;
+  --box-shadow: none;
+
+  font-weight: 600;
+  letter-spacing: 0.2px;
 }
 
 #btnIrLogin, #btnIrRegistro {
-    font-size: 14px;
-    margin: 8px 10%;
-
+  width: 70%;
+  margin: 16px auto;
+  display: block;
+  font-size: 15px;
+  text-transform: none;
+  color: #007aff;
 }
 
+#btnActualizar,
+#btnNuevaPelicula,
+#btnEstadisticas,
+#btnMapa {
+  width: 92%;
+  margin: 8px auto;
+  display: block;
+  --border-radius: 12px;
+}
+
+
+
+#pantalla-peliculas ion-item {
+  border-radius: 12px;
+  margin: 8px 12px;
+  border: 1px solid #e5e5ea;
+}
+
+#listaPeliculas h2 {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1c1c1e;
+}
+
+#listaPeliculas p {
+  font-size: 13px;
+  color: #8e8e93;
+}
+#listaPeliculas ion-button {
+  --border-radius: 10px;
+  --background: #ff3b30;
+}
+
+
+#btnFiltrar {
+  width: 92%;
+  margin: 10px auto;
+  display: block;
+}
+
+#pantalla-alta {
+  --background: #f2f2f7;
+}
+
+#pantalla-alta ion-item {
+  --background: white;
+  border-radius: 12px;
+  margin: 6px 10px;
+  border: 1px solid #e5e5ea;
+}
+
+#btnAlta {
+  width: 50%;
+  --border-radius: 12px;
+  margin: 20px auto;
+  display: block;
+}
+
+
+/* ===== DASHBOARD OSCURO ===== */
+
+
+
+/* TOTAL */
+
+.dash-total {
+  margin: 8px;
+  padding: 10px 12px;
+
+  background: linear-gradient(145deg, #16181f, #0b0c10);
+  border: 1px solid #1f2229;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dash-label {
+  color: #8a8f98;
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+
+.dash-num {
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 0 8px rgba(0, 122, 255, .5);
+}
+
+/* TITULOS */
+
+.dash-title {
+  margin: 12px 10px 6px;
+  color: #8a8f98;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+/* GRID CATEGORÍAS */
+
+.dash-grid {
+  margin: 0 12px;
+}
+
+.dash-card {
+  background: linear-gradient(145deg, #16181f, #0b0c10);
+  border: 1px solid #1f2229;
+  border-radius: 10px;
+
+  padding: 8px 10px;
+  margin-bottom: 6px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  transition: .2s;
+}
+
+.dash-card:hover {
+  border-color: #2f80ff55;
+}
+
+/* IZQUIERDA */
+
+.dash-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #e4e6eb;
+}
+
+.dash-emoji {
+  width: 26px;
+  height: 26px;
+
+  background: #0f1014;
+  border-radius: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 15px;
+}
+
+/* CONTADOR */
+
+.dash-count {
+  font-weight: 700;
+  font-size: 14px;
+  color: #fff;
+}
+
+/* EDADES */
+
+.dash-ages {
+  margin: 0 8px;
+  padding: 10px;
+
+  background: linear-gradient(145deg, #16181f, #0b0c10);
+  border: 1px solid #1f2229;
+  border-radius: 10px;
+
+  color: #e4e6eb;
+}
+
+.age-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 4px 0;
+  font-size: 13px;
+}
+
+/* BARRAS */
+
+.dash-bar {
+  height: 6px;
+  background: #1a1c22;
+  border-radius: 10px;
+  margin: 6px 0 12px;
+}
+
+.dash-fill {
+  height: 6px;
+  border-radius: 10px;
+  transition: .4s ease;
+}
+
+.dash-fill.blue {
+  background: linear-gradient(to right, #007aff, #00c6ff);
+  box-shadow: 0 0 8px rgba(0,122,255,.6);
+}
+
+.dash-fill.purple {
+  background: linear-gradient(to right, #9b5cff, #c084fc);
+  box-shadow: 0 0 8px rgba(155,92,255,.6);
+}
+
+
+
+#mapa {
+  border-radius: 14px;
+  margin: 12px;
+  border: 1px solid #e5e5ea;
+}
+
+ion-toolbar {
+  --background: white;
+  --border-color: #e5e5ea;
+}
+
+ion-title {
+  font-weight: 600;
+  color: #1c1c1e;
+}
+
+
+
+.ion-page {
+  animation: fade 0.2s ease;
+}
+
+@keyframes fade {
+  from { opacity: 0 }
+  to   { opacity: 1 }
+}

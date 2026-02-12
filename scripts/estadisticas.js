@@ -31,25 +31,60 @@ function calcularEstadisticas() {
   let porcentaje12 = total > 0 ? ((aptas12 * 100) / total).toFixed(1) : 0;
   let porcentajeResto = total > 0 ? ((resto * 100) / total).toFixed(1) : 0;
 
-  let html = `<h3>Total películas: ${total}</h3>`;
+  let html = `
 
-  html += `<h4>Por categoría</h4>`;
+<div class="dash-total">
+  <span class="dash-label">TOTAL PELÍCULAS</span>
+  <span class="dash-num">${total}</span>
+</div>
+
+<h4 class="dash-title">CATEGORÍAS</h4>
+
+<div class="dash-grid">
+`;
 
   for (let cat of categoriasGlobal) {
     html += `
-      <ion-item>
-        <ion-label>
-          ${cat.emoji} ${cat.nombre}: ${conteoPorCat[cat.id]}
-        </ion-label>
-      </ion-item>
-    `;
+  <div class="dash-card">
+    <div class="dash-left">
+      <div class="dash-emoji">${cat.emoji}</div>
+      <span>${cat.nombre}</span>
+    </div>
+
+    <div class="dash-count">
+      ${conteoPorCat[cat.id]}
+    </div>
+  </div>
+  `;
   }
 
   html += `
-    <h4>Porcentaje edades</h4>
-    <p>+12: ${aptas12} (${porcentaje12}%)</p>
-    <p>Resto: ${resto} (${porcentajeResto}%)</p>
-  `;
+</div>
+
+<h4 class="dash-title">CLASIFICACIÓN</h4>
+
+<div class="dash-ages">
+
+  <div class="age-row">
+    <span>+12</span>
+    <span>${aptas12}</span>
+  </div>
+
+  <div class="dash-bar">
+    <div class="dash-fill blue" style="width:${porcentaje12}%"></div>
+  </div>
+
+  <div class="age-row">
+    <span>Resto</span>
+    <span>${resto}</span>
+  </div>
+
+  <div class="dash-bar">
+    <div class="dash-fill purple" style="width:${porcentajeResto}%"></div>
+  </div>
+
+</div>
+`;
 
   document.querySelector("#listaPorCategoria").innerHTML = html;
 }
