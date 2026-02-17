@@ -11,7 +11,7 @@ body {
 #pantalla-login ion-content,
 #pantalla-registro ion-content {
   --background: #d4d4d6;
-  --padding-top: 20px;
+  --padding-top: 50px;
 }
 
 ion-item {
@@ -259,7 +259,7 @@ ion-item {
 
 #mapa {
   border-radius: 14px;
-  margin: 12px;
+  margin: 55px;
   border: 1px solid #e5e5ea;
 }
 

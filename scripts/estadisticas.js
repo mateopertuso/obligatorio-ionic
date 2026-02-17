@@ -57,11 +57,11 @@ function calcularEstadisticas() {
   </div>
   `;
   }
-
+  
   html += `
 </div>
 
-<h4 class="dash-title">CLASIFICACIÓN</h4>
+<h4 class="dash-title">CLASIFICACIÒN</h4>
 
 <div class="dash-ages">
 
