@@ -1,94 +1,3 @@
-function calcularEstadisticas() {
-  let total = peliculasGlobal.length;
-
-  let conteoPorCat = {};
-
-  for (let cat of categoriasGlobal) {
-    conteoPorCat[cat.id] = 0;
-  }
-
-  for (let peli of peliculasGlobal) {
-    if (conteoPorCat[peli.idCategoria] !== undefined) {
-      conteoPorCat[peli.idCategoria]++;
-    }
-  }
-
-  let aptas12 = 0;
-  let resto = 0;
-
-  for (let peli of peliculasGlobal) {
-    let cat = categoriasGlobal.find((c) => c.id == peli.idCategoria);
-
-    if (!cat) continue;
-
-    if (cat.edad_requerida > 12) {
-      aptas12++;
-    } else {
-      resto++;
-    }
-  }
-
-  let porcentaje12 = total > 0 ? ((aptas12 * 100) / total).toFixed(1) : 0;
-  let porcentajeResto = total > 0 ? ((resto * 100) / total).toFixed(1) : 0;
-
-  let html = `
-
-<div class="dash-total">
-  <span class="dash-label">TOTAL PELÍCULAS</span>
-  <span class="dash-num">${total}</span>
-</div>
-
-<h4 class="dash-title">CATEGORÍAS</h4>
-
-<div class="dash-grid">
-`;
-
-  for (let cat of categoriasGlobal) {
-    html += `
-  <div class="dash-card">
-    <div class="dash-left">
-      <div class="dash-emoji">${cat.emoji}</div>
-      <span>${cat.nombre}</span>
-    </div>
-
-    <div class="dash-count">
-      ${conteoPorCat[cat.id]}
-    </div>
-  </div>
-  `;
-  }
-
-  html += `
-</div>
-
-<h4 class="dash-title">CLASIFICACIÓN</h4>
-
-<div class="dash-ages">
-
-  <div class="age-row">
-    <span>+12</span>
-    <span>${aptas12}</span>
-  </div>
-
-  <div class="dash-bar">
-    <div class="dash-fill blue" style="width:${porcentaje12}%"></div>
-  </div>
-
-  <div class="age-row">
-    <span>Resto</span>
-    <span>${resto}</span>
-  </div>
-
-  <div class="dash-bar">
-    <div class="dash-fill purple" style="width:${porcentajeResto}%"></div>
-  </div>
-
-</div>
-`;
-
-  document.querySelector("#listaPorCategoria").innerHTML = html;
-}
-
 function prepararEstadisticas() {
   let token = localStorage.getItem("token");
 
@@ -114,4 +23,112 @@ function prepararEstadisticas() {
       calcularEstadisticas();
     })
     .catch(() => alert("Error al cargar estadísticas"));
+}
+
+function obtenerEstadisticas() {
+  const total = peliculasGlobal.length;
+
+  const conteoPorCat = {};
+  categoriasGlobal.forEach((cat) => (conteoPorCat[cat.id] = 0));
+
+  peliculasGlobal.forEach((peli) => {
+    if (conteoPorCat[peli.idCategoria] !== undefined) {
+      conteoPorCat[peli.idCategoria]++;
+    }
+  });
+
+  let aptas12 = 0;
+  let resto = 0;
+
+  peliculasGlobal.forEach((peli) => {
+    const cat = categoriasGlobal.find((c) => c.id == peli.idCategoria);
+    if (!cat) return;
+
+    if (cat.edad_requerida > 12) {
+      aptas12++;
+    } else {
+      resto++;
+    }
+  });
+
+  return {
+    total,
+    categorias: categoriasGlobal.map((cat) => ({
+      ...cat,
+      cantidad: conteoPorCat[cat.id],
+    })),
+    aptas12,
+    resto,
+    porcentaje12: total ? aptas12 / total : 0,
+    porcentajeResto: total ? resto / total : 0,
+  };
+}
+
+function renderEstadisticas(data) {
+  const container = document.querySelector("#listaPorCategoria");
+  container.innerHTML = "";
+
+  // ----- TOTAL -----
+  const totalCard = document.createElement("ion-card");
+  totalCard.innerHTML = `
+    <ion-card-content class="total-card">
+      <div class="total-label">TOTAL PELÍCULAS</div>
+      <div class="total-number">${data.total}</div>
+    </ion-card-content>
+  `;
+  container.appendChild(totalCard);
+
+  // ----- CATEGORÍAS -----
+  const catCard = document.createElement("ion-card");
+  catCard.innerHTML = `
+    <ion-card-header>
+      <ion-card-title>Categorías</ion-card-title>
+    </ion-card-header>
+  `;
+
+  const list = document.createElement("ion-list");
+
+  data.categorias.forEach((cat) => {
+    const item = document.createElement("ion-item");
+    item.innerHTML = `
+      <ion-label>
+        <h2>${cat.emoji} ${cat.nombre}</h2>
+      </ion-label>
+      <ion-badge color="primary">${cat.cantidad}</ion-badge>
+    `;
+    list.appendChild(item);
+  });
+
+  catCard.appendChild(list);
+  container.appendChild(catCard);
+
+  // ----- CLASIFICACIÓN -----
+  const clasCard = document.createElement("ion-card");
+  clasCard.innerHTML = `
+  <ion-card-header>
+    <ion-card-title>Clasificación</ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+
+    <div class="age-row">
+      <span>+12</span>
+      <span>${(data.porcentaje12 * 100).toFixed(1)}%</span>
+    </div>
+    <ion-progress-bar value="${data.porcentaje12}" color="primary"></ion-progress-bar>
+
+    <div class="age-row ion-margin-top">
+      <span>Resto</span>
+      <span>${(data.porcentajeResto * 100).toFixed(1)}%</span>
+    </div>
+    <ion-progress-bar value="${data.porcentajeResto}" color="secondary"></ion-progress-bar>
+
+  </ion-card-content>
+`;
+
+  container.appendChild(clasCard);
+}
+
+function calcularEstadisticas() {
+  const data = obtenerEstadisticas();
+  renderEstadisticas(data);
 }

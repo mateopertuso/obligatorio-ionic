@@ -82,7 +82,7 @@ function cargarMapa() {
             conteo[u.id] = u.cantidadDeUsuarios;
           }
 
-          dibujarMapa(paisesData.paises, conteo);
+          crearMapa(paisesData.paises, conteo);
         })
         .catch(function () {
           alert("Error al obtener usuarios por país");
@@ -93,15 +93,18 @@ function cargarMapa() {
     });
 }
 
-function dibujarMapa(paises, conteo) {
+function crearMapa(paises, conteo) {
   if (mapa !== null) {
     mapa.remove();
     mapa = null;
   }
 
-  mapa = L.map("mapa").setView([-30, -60], 4);
+  mapa = L.map("mapa").setView([-34.894517716076805, -56.15253906600995], 14);
 
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(mapa);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: "© OpenStreetMap",
+  }).addTo(mapa);
 
   for (let p of paises) {
     L.marker([p.latitud, p.longitud]).addTo(mapa).bindPopup(`

@@ -80,19 +80,19 @@ function navegar(evt) {
   }
 }
 
-// ================= REGISTRO =================
+// registro
 
 function registrar() {
-  let usuario = document.querySelector("#regUsuario").value;
-  let password = document.querySelector("#regPass").value;
-  let idPais = document.querySelector("#slcPaises").value;
+  const usuario = document.querySelector("#regUsuario").value.trim();
+  const password = document.querySelector("#regPass").value.trim();
+  const idPais = document.querySelector("#slcPaises").value;
 
-  if (usuario == "" || password == "") {
-    alert("Complete todos los datos");
+  if (!usuario || !password) {
+    mostrarMensaje("WARNING", "Advertencia", "Complete todos los datos");
     return;
   }
 
-  let nuevo = new Usuario(usuario, password, idPais);
+  const nuevo = new Usuario(usuario, password, idPais);
 
   fetch("https://movielist.develotion.com/usuarios.php", {
     method: "POST",
@@ -101,34 +101,62 @@ function registrar() {
     },
     body: JSON.stringify(nuevo),
   })
-    .then((response) => response.json())
-    .then((res) => {
-      if (res.codigo == 200) {
-        alert("Registro exitoso");
-        window.location = "#/";
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (res) {
+      if (res.codigo === 200) {
+        // login automatico
+        return fetch("https://movielist.develotion.com/login.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ usuario, password }),
+        });
       } else {
-        alert(res.mensaje);
+        throw new Error(res.mensaje);
       }
     })
-    .catch(() => alert("Error de conexión"));
+    .then(function (responseLogin) {
+      return responseLogin.json();
+    })
+    .then(function (resLogin) {
+      if (resLogin.codigo === 200) {
+        localStorage.setItem("token", resLogin.token);
+
+        mostrarMensaje("SUCCESS", "Bienvenido", "Registro y login exitosos");
+
+        window.location = "#/peliculas";
+      } else {
+        mostrarMensaje(
+          "ERROR",
+          "Error",
+          resLogin.mensaje || "Error en login automático",
+        );
+      }
+    })
+    .catch(function (error) {
+      mostrarMensaje("ERROR", "Error", error.message || "Error de conexión");
+    });
 }
 
 function irRegistro() {
   window.location = "#/registro";
 }
 
-// ================= LOGIN ==================
+// login
 
 function login() {
-  let usuario = document.querySelector("#txtUsuario").value;
-  let password = document.querySelector("#txtPassword").value;
+  const usuario = document.querySelector("#txtUsuario").value.trim();
+  const password = document.querySelector("#txtPassword").value.trim();
 
-  if (usuario == "" || password == "") {
-    alert("Complete usuario y password");
+  if (!usuario || !password) {
+    mostrarMensaje("WARNING", "Advertencia", "Complete todos los datos");
     return;
   }
 
-  let datos = { usuario, password };
+  const datos = { usuario, password };
 
   fetch("https://movielist.develotion.com/login.php", {
     method: "POST",
@@ -137,37 +165,38 @@ function login() {
     },
     body: JSON.stringify(datos),
   })
-    .then(async (response) => {
-      const texto = await response.text();
-
-      try {
-        return JSON.parse(texto);
-      } catch {
-        throw new Error("No vino JSON válido");
-      }
+    .then(function (response) {
+      return response.json();
     })
-    .then((res) => {
-      if (res.codigo == 200) {
+    .then(function (res) {
+      if (res.codigo === 200) {
         localStorage.setItem("token", res.token);
 
-        if (res.usuario) {
-          localStorage.setItem("usuario", JSON.stringify(res.usuario));
-          localStorage.setItem("miPais", res.usuario.idPais);
-        }
+        mostrarMensaje(
+          "SUCCESS",
+          "Login correcto",
+          "Token guardado correctamente",
+        );
 
         window.location = "#/peliculas";
       } else {
-        alert(res.mensaje);
+        mostrarMensaje(
+          "ERROR",
+          "Error",
+          res.mensaje || "Credenciales incorrectas",
+        );
       }
     })
-    .catch(() => alert("Error de conexión"));
+    .catch(function () {
+      mostrarMensaje("ERROR", "Error", "Error de conexión");
+    });
 }
 
 function irLogin() {
   window.location = "#/";
 }
 
-// ================= PAÍSES =================
+// paises
 
 function cargarPaises() {
   fetch("https://movielist.develotion.com/paises")
@@ -176,16 +205,15 @@ function cargarPaises() {
       let opciones = "";
 
       for (let p of data.paises) {
-        opciones += `<ion-select-option value="${p.id}">
-                     ${p.nombre}
-                   </ion-select-option>`;
+        opciones += `<ion-select-option value="${p.id}">${p.nombre}</ion-select-option>`;
       }
 
       document.querySelector("#slcPaises").innerHTML = opciones;
     });
 }
 
-// ================= LISTAR PELÍCULAS =================
+// listar pelis
+
 let peliculasGlobal = [];
 let categoriasGlobal = [];
 
@@ -244,7 +272,7 @@ function mostrarPeliculas(lista) {
   document.querySelector("#listaPeliculas").innerHTML = html;
 }
 
-// ================= ELIMINAR =================
+// eliminar peli
 
 function eliminarPelicula(id) {
   if (!confirm("¿Seguro que desea eliminar?")) return;
@@ -265,21 +293,22 @@ function eliminarPelicula(id) {
     })
     .then((res) => {
       if (res.codigo == 200) {
-        alert("Eliminada");
+        mostrarMensaje("SUCCESS", "Exito", "Eliminada");
         prepararPantallaPeliculas();
       } else {
-        alert(res.mensaje || "No se pudo eliminar");
+        mostrarMensaje("ERROR", "Error", res.mensaje || "No se pudo eliminar");
       }
     })
-    .catch(() => alert("Error al eliminar"));
+    .catch(() => mostrarMensaje("ERROR", "Error", "Error al eliminar"));
 }
 
-// ================= ALTA PELÍCULA =================
+// alta pelicula
 
 function cargarCategorias() {
   let token = localStorage.getItem("token");
 
-  fetch("https://movielist.develotion.com/categorias.php", {
+  fetch("https://movielist.develotion.com/categorias", {
+    method: "GET",
     headers: {
       Authorization: "Bearer " + token,
     },
@@ -322,13 +351,13 @@ function altaPelicula() {
   let comentario = document.querySelector("#txtComentario").value;
 
   if (!nombre || !fecha || !comentario) {
-    alert("Complete todos los datos");
+    mostrarMensaje("WARNING", "Advertencia", "Complete todos los datos");
     return;
   }
 
   let hoy = new Date().toISOString().split("T")[0];
   if (fecha > hoy) {
-    alert("La fecha no puede ser futura");
+    mostrarMensaje("WARNING", "Advertencia", "La fecha no puede ser futura");
     return;
   }
 
@@ -343,13 +372,13 @@ function altaPelicula() {
 
       alerta.buttons = [
         {
-          text: "Reformular ✏️",
+          text: "Reformular",
           handler: () => {
             document.querySelector("#txtComentario").focus();
           },
         },
         {
-          text: "Cancelar ❌",
+          text: "Cancelar.",
           role: "cancel",
           handler: () => {
             limpiarAlta();
@@ -387,11 +416,11 @@ function guardarPelicula(idCategoria, nombre, fecha) {
     .then((r) => r.json())
     .then((res) => {
       if (res.codigo == 200) {
-        alert("Película registrada");
+        mostrarMensaje("SUCCESS", "Exito", "Película registrada");
         limpiarAlta();
         window.location = "#/peliculas";
       } else {
-        alert(res.mensaje);
+        mostrarMensaje("ERROR", "Error", res.mensaje);
       }
     });
 }
@@ -446,4 +475,25 @@ function logout() {
   document.querySelector("#txtUsuario").value = "";
   document.querySelector("#txtPassword").value = "";
   window.location = "#/";
+}
+
+function mostrarMensaje(tipo, titulo, texto, duracion) {
+  const toast = document.createElement("ion-toast");
+  toast.header = titulo;
+  toast.message = texto;
+  if (!duracion) duracion = 2000;
+  toast.duration = duracion;
+  if (tipo === "ERROR") {
+    toast.color = "danger";
+    toast.icon = "alert-circle-outline";
+  } else if (tipo === "WARNING") {
+    toast.color = "warning";
+    toast.icon = "warning-outline";
+  } else if (tipo === "SUCCESS") {
+    toast.color = "success";
+    toast.icon = "checkmark-circle-outline";
+  }
+
+  document.body.appendChild(toast);
+  toast.present();
 }
