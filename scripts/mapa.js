@@ -14,39 +14,6 @@ function obtenerMiPais() {
   return pais;
 }
 
-// function cargarMapa() {
-//   let token = localStorage.getItem("token");
-
-//   Promise.all([
-//     fetch("https://movielist.develotion.com/paises.php").then((r) => r.json()),
-
-//     fetch("https://movielist.develotion.com/usuariosPorPais", {
-//       headers: {
-//         Authorization: "Bearer " + token,
-//       },
-//     }).then((r) => r.json()),
-//   ])
-//     .then(([paisesData, usuariosData]) => {
-//       let conteo = {};
-
-//       // Base desde países
-//       for (let p of paisesData.paises) {
-//         conteo[p.id] = 0;
-//       }
-
-//       // Datos reales del endpoint
-//       for (let u of usuariosData.paises) {
-//         conteo[u.id] = u.cantidadDeUsuarios;
-//       }
-
-//       dibujarMapa(paisesData.paises, conteo);
-//     })
-//     .catch((e) => {
-//       console.log("ERROR REAL MAPA:", e);
-//       alert("Error al cargar mapa");
-//     });
-// }
-
 function cargarMapa() {
   let token = localStorage.getItem("token");
 
@@ -99,7 +66,7 @@ function crearMapa(paises, conteo) {
     mapa = null;
   }
 
-  mapa = L.map("mapa").setView([-34.894517716076805, -56.15253906600995], 14);
+  mapa = L.map("mapa").setView([-34.51829, -56.277464], 14);
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,

@@ -26,9 +26,6 @@ function inicio() {
   document.querySelector("#btnLogin").addEventListener("click", login);
   document.querySelector("#btnAlta").addEventListener("click", altaPelicula);
   document
-    .querySelector("#btnFiltrar")
-    .addEventListener("click", filtrarPeliculas);
-  document
     .querySelector("#slcFiltro")
     .addEventListener("ionChange", filtrarPeliculas);
 
